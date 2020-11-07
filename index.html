@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+canvas {
+    border:1px solid #d3d3d3;
+    background-color: #4e8a4D;
+}
+</style>
+
+<body onload= "startGame()">
+
+<script type="text/javascript">
+var myGamePiece;
+var red = 0;
+var blue = 0;
+var min = 15;
+var sec = 0;
+var retrand;
+var end = 0;
+var si = 0;
+var sio = 0;
+var yd = 50;
+var por = 10;
+var down = 1;
+var quart = 1;
+var pass1;
+var pass2;
+var run1;
+var run2;
+var ret1;
+var ret2;
+var ret3;
+
+var bluepa = 0;
+var bluepc = 0;
+var bluepy = 0;
+var bluera = 0;
+var bluery = 0;
+var bluept = 0;
+var bluert = 0;
+var blueint = 0;
+
+var redpa = 0;
+var redpc = 0;
+var redpy = 0;
+var redra = 0;
+var redry = 0;
+var redpt = 0;
+var redrt = 0;
+var redint = 0;
+
+var auto = 0;
+var firstm = 0;
+var time = 0;
+var ryd = 35;
+var firsta = 10;
+var ending = ["last", "st", "nd", "rd", "th"];
+var coma = ["Kickoff", "Kickreturn to the " + (ret1 + ret2 + ret3), "Pass for " + (pass1 + pass2) + " yards", "Incomplete pass", "Interception", "Sack", "Touchdown", "Run for " + (run1 + run2) + " yards", "Touchback", "Punt", "Safety","Field Goal", "Field Goal Made", "Field Goal Missed"];
+var com = coma[0];
+
+
+
+
+function startGame() {
+  
+  
+  myBlueScore = new component("30px", "Arial", "white", 40, 40, "text");
+  myRedScore = new component("30px", "Arial", "white", 160, 40, "text");
+  //ydLine = new component("30px", "Arial", "white", 380, 40, "text");
+  timemin = new component("30px", "Arial", "white", 280, 40, "text");
+  timesec = new component("30px", "Arial", "white", 320, 40, "text");
+  downcount = new component("30px", "Arial", "white", 500, 40, "text");
+  commentary = new component("30px", "Arial", "white", 320, 80, "text");
+  quartcount = new component("30px", "Arial", "white", 400, 40, "text");
+
+  bluep = new component("30px", "Arial", "white", 825, 135, "text");
+  bluer = new component("30px", "Arial", "white", 825, 175, "text");
+  bluepyd = new component("30px", "Arial", "white", 1120, 135, "text");
+  blueryd = new component("30px", "Arial", "white", 1120, 175, "text");
+  blueptd = new component("30px", "Arial", "white", 1190, 135, "text");
+  bluertd = new component("30px", "Arial", "white", 1190, 175, "text");
+  bluei = new component("30px", "Arial", "white", 1260, 135, "text");
+
+
+  redp = new component("30px", "Arial", "white", 825, 215, "text");
+  redr = new component("30px", "Arial", "white", 825, 255, "text");
+  redpyd = new component("30px", "Arial", "white", 1120, 215, "text");
+  redryd = new component("30px", "Arial", "white", 1120, 255, "text");
+  redptd = new component("30px", "Arial", "white", 1190, 215, "text");
+  redrtd = new component("30px", "Arial", "white", 1190, 255, "text");
+  redi = new component("30px", "Arial", "white", 1260, 215, "text");
+
+  ball = new component(50, 30, "https://i.pinimg.com/originals/c4/88/c6/c488c683e492a67dcb837437c73bc5b6.png", 265, 278,"image");
+  myGamePiece1 = new component(800, 386, "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/AmFBfield.svg/400px-AmFBfield.svg.png", 0, 100, "image");
+  point = new component(62, 342, "white", -100, 122);
+  firstl = new component(4, 342, "yellow", -100, 122);
+  bluel = new component(4, 342, "blue", -100, 122);
+  myGameArea.start();
+}
+
+
+
+
+function component(width, height, color, x, y, type) {
+  this.type = type;
+  if (type == "image") {
+    this.image = new Image();
+    this.image.src = color;
+  }
+  this.width = width;
+  this.height = height;
+  this.x = x;
+  this.y = y;
+  this.color = color;
+  this.update = function() {
+    ctx = myGameArea.context;
+    if (type == "image") {
+      ctx.drawImage(this.image, 
+      this.x, 
+      this.y,
+      this.width, this.height);
+    } else {
+    if (this.type == "text") {
+      ctx.font = this.width + " " + this.height;
+      ctx.fillStyle = this.color;
+      ctx.fillText(this.text, this.x, this.y);
+    } else {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+  }
+    }
+  }
+}
+
+
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 1400;
+        this.canvas.height = 500;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0;
+        this.interval = setInterval(updateGameArea, 20);
+        },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    stop : function() {
+        clearInterval(this.interval);
+    }
+}
+
+
+
+function everyinterval(n) {
+  if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+  return false;
+}
+
+function getRndInteger(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) ) + min;
+}
+
+
+ function button(hio){
+  if(hio == 0){
+    por = 0;
+    pass1 = getRndInteger(-14,20);
+    pass2 = getRndInteger(-14,20);
+    sack = getRndInteger(1, 12);
+    coma[2] = "Pass for " + (pass1 + pass2) + " yards";
+  }
+  if(hio == 1){
+    por = 1;
+    run1 = getRndInteger(-3,7);
+    run2 = getRndInteger(-3,8);
+    coma[7] = "Run for " + (run1 + run2) + " yards";
+  }
+  if(hio == 2){
+    por = 2;
+    punt1 = getRndInteger(35,55);
+  }
+  if(hio == 3){
+    por = 3;
+    fgp = Math.random();
+    if(end == 6){
+      if(ryd == yd){
+        coma[11] = ((100-yd) + 19) +" yard Field Goal";
+      }else{
+        coma[11] = (ryd + 19) +" yard Field Goal";
+      }
+    }
+    if(end == 2){
+    coma[11] = (yd + 19) +" yard Field Goal";
+    }
+  }
+  if(hio == 4){
+    auto = 1;
+  }
+}
+
+
+function kickoff(side){
+  com = coma[0];
+  point.x = -100;
+  firstl.x = -100;
+  bluel.x = -100;
+  if(side == 0){                               // end 0
+    yd = 35;
+    if(sio == 0){
+      ball.x = 265;
+      sio = 1;
+    }
+    if(ball.x > 719){
+      end = 1;
+      sio = 0;
+    }
+    while(ball.x < 720){
+      ball.x += 5;
+      break;
+    }
+  }else{                                       // end 4
+    yd = 65;
+    if(si == 0){
+      ball.x = 471;
+      si = 1;
+    }
+    if(ball.x < 31){
+      end = 5;
+      si = 0;
+    }
+    si = 1;
+    while(ball.x > 30){
+      ball.x -= 5;
+      break;
+    }
+  }
+}
+function kickret(side){
+  if(retrand > 2){
+    if(side == 1){                               // end 1
+      ball.x = 535;
+      end = 2;
+      yd = 75;
+      com = coma[8];
+      firstl.x = ball.x-41;
+      bluel.x = ball.x+23;
+      firsta = 10;
+    }else{                                       // end 5
+      ball.x = 219;
+      end = 6;
+      yd = 25;
+      com = coma[8];
+      firstl.x = ball.x+84;
+      bluel.x = ball.x+23;
+      firsta = 10;
+    }
+  }else{
+    if(side == 1){                               // end 1
+      point.x = 22;
+      point.color = "blue";
+      if(ball.x <= (719-27)-((ret1+ret2+ret3)*6.3)){
+        end = 2;
+        yd = 100-(ret1+ret2+ret3);
+        com = coma[1];
+        firstl.x = ball.x-41;
+        bluel.x = ball.x+23;
+        firsta = 10;
+      }else{
+      while(ball.x > (719-27)-((ret1+ret2+ret3)*6.3)){
+        ball.x -= 2;
+        break;
+      }
+      }
+      
+    }else{                                     // end 5
+      point.x = 717;
+      point.color = "Red";
+      if(ball.x >= ((ret1+ret2+ret3)*6.3)+60){
+        end = 6;
+        yd = ret1+ret2+ret3;
+        com = coma[1];
+        firstl.x = ball.x+84;
+        bluel.x = ball.x+23;
+        firsta = 10;
+      }else{
+      while(ball.x < ((ret1+ret2+ret3)*6.3)+60){
+        ball.x += 2;
+        break;
+      }
+      }
+    }
+  }
+}
+
+function punt(side){
+  if(por == 2){
+  firstl.x = -100;
+  bluel.x = -100;
+  point.x = -100;
+  com = coma[9];
+    if(side == 0){
+      if(ball.x >= 689){
+        ball.x = 560;
+        end = 2;
+        por = 10;
+        yd = 80;
+        down = 1;
+        firstl.x = ball.x-41;
+        bluel.x = ball.x+23;
+        firsta = 10;
+        time = 10;
+      }else{
+      if(ball.x >= ((yd + punt1)*6.3)+59){
+        end = 2;
+        por = 10;
+        yd += punt1;
+        down = 1;
+        firstl.x = ball.x-41;
+        bluel.x = ball.x+23;
+        firsta = 10;
+        time = 10;
+      }else{
+      while(ball.x < ((yd + punt1)*6.3)+60){
+        ball.x += 5;
+        break;
+      }
+      }
+      }
+    }else{
+      if(ball.x <= 61){
+        ball.x = 191;
+        end = 6;
+        por = 10;
+        yd = 20;
+        down = 1;
+        firstl.x = ball.x+84;
+        bluel.x = ball.x+23;
+        firsta = 10;
+        time = 10;
+      }else{
+      if(ball.x <= ((yd - punt1)*6.3)+61){
+        end = 6;
+        por = 10;
+        yd -= punt1;
+        down = 1;
+        firstl.x = ball.x+84;
+        bluel.x = ball.x+23;
+        firsta = 10;
+        time = 10;
+      }else{
+      while(ball.x > ((yd - punt1)*6.3)+60){
+        ball.x -= 5;
+        break;
+      }
+      }
+      }
+    }
+  }else{}
+}
+
+
+
+
+function pass(side){
+  if (side == 0){                              // end 6
+    if(por == 0){
+      if (ball.x >= 690){
+        redpy += (100-yd);
+        yd = 100;
+        time = 30;
+        redpt += 1;
+      }
+      if ((pass1+pass2) < 1){
+        if((pass1+pass2) < -13){
+          if ((pass1+pass2) < -18){
+            down = 1;
+            end = 2;
+            point.x = 22;
+            point.color = "blue";
+            com = coma[4];
+            por = 10;
+            firstl.x = ball.x-41;
+            bluel.x = ball.x+23;
+            firsta = 10;
+            time = 30;
+            redpa += 1;
+            redint += 1;
+          }else{
+            com = coma[5];
+          if (ball.x <= ((yd - sack)*6.3)+60){
+            por = 10;
+            yd -= sack;
+            down += 1;
+            time = 40;
+            bluel.x = ball.x+23;
+            //firsta -= (pass1 + pass2);
+            firsta += sack;
+          }else{
+          while(ball.x > ((yd - sack)*6.3)+60){
+            ball.x -= 1;
+            break;
+          }
+          }
+          }
+        }else{
+          down += 1;
+          por = 10;
+          com = coma[3];
+          time = 10;
+          redpa += 1;
+        }
+      }else{
+        if(ball.x >= ((yd+pass1+pass2)*6.3)+60){
+          yd += (pass1 + pass2);
+          down += 1;
+          por = 10;
+          com = coma[2];
+          time = 30;
+          firsta -= (pass1 + pass2);
+          bluel.x = ball.x+23;
+          redpa += 1;
+          redpc += 1;
+          redpy += (pass1 + pass2);
+          if(firstm == 1){
+            firstl.x = ball.x+82;
+            firsta = 10;
+            down = 1;
+          }
+        }else{
+        while(ball.x < ((yd+pass1+pass2)*6.3)+60){
+          ball.x += 3;
+          break;
+        }
+        }
+      }
+      if(firstl.x > 714 && firstl.x !== -100){
+        firsta = "Goal";
+      }
+    }else{}
+  }else{                                         // end 2
+    if(por == 0){
+      if (ball.x <= 60){
+        bluepy += yd;
+        yd = 0;
+        time = 30;
+        bluept += 1;
+      }
+      if((pass1 + pass2) < 1){
+        if((pass1+pass2) < -13){
+          if((pass1+pass2) < -18){
+            down = 1;
+            end = 6;
+            point.x = 717;
+            point.color = "Red";
+            com = coma[4];
+            por = 10;
+            firstl.x = ball.x+84;
+            bluel.x = ball.x+23;
+            firsta = 10;
+            time = 30;
+            bluepa += 1;
+            blueint += 1;
+          }else{
+             com = coma[5];
+          if (ball.x >= ((yd + sack)*6.3)+60){
+            por = 10;
+            yd += sack;
+            down += 1;
+            time = 40;
+            bluel.x = ball.x+23;
+            //firsta -= (pass1 + pass2);
+            firsta += sack;
+          }else{
+          while(ball.x < ((yd + sack)*6.3)+60){
+            ball.x += 1;
+            break;
+          }
+          }
+          }
+        }else{
+          down += 1;
+          por = 10;
+          com = coma[3];
+          time = 10;
+          bluepa += 1;
+        }
+      }else{
+        if(ball.x <= (((yd-(pass1+pass2))*6.3))+60){
+          yd -= (pass1 + pass2);
+          down += 1;
+          por = 10;
+          com = coma[2];
+          time = 30;
+          bluel.x = ball.x+23;
+          firsta -= (pass1 + pass2);
+          bluepa += 1;
+          bluepc += 1;
+          bluepy += (pass1 + pass2);
+          if(firstm == 1){
+            firstl.x = ball.x-41;
+            firsta = 10;
+            down = 1;
+          }
+        }else{
+        while(ball.x > (((yd-(pass1+pass2))*6.3))+60){
+          ball.x -= 3;
+          break;
+        }
+        }
+      }
+      if(firstl.x < 83 && firstl.x !== -100){
+        firsta = "Goal";
+      }
+    }else{}
+  }
+}
+
+
+
+
+
+
+
+function run(side){
+  if(side == 0){                                // end 6
+    if(por == 1){
+      if (ball.x >= 690){
+        redry += (100-yd);
+        yd = 100;
+        time = 40;
+        redra += 1;
+        redrt += 1;
+      }
+      if((run1+run2) < 0){
+          if(ball.x <= ((yd+(run1+run2))*6.3)+60){
+          yd += (run1+run2);
+          down += 1;
+          por = 10;
+          com = coma[7];
+          time = 40;
+          bluel.x = ball.x+23;
+          firsta -= (run1 + run2);
+          redra += 1;
+          redry += (run1 + run2);
+        }else{
+        while(ball.x > ((yd+(run1+run2))*6.3)+60){
+          ball.x -= 1;
+          break;
+        }
+        }
+
+      }else{
+        if(ball.x >= ((yd + run1 + run2)*6.3)+60){
+          yd += (run1 + run2);
+          down += 1;
+          por = 10;
+          firsta -= (run1 + run2);
+          bluel.x = ball.x+23;
+          if(firstm == 1){
+            firstl.x = ball.x+82;
+            firsta = 10;
+            down = 1;
+          }
+          com = coma[7];
+          time = 40;
+          redra += 1;
+          redry += (run1 + run2);
+        }else{
+        while(ball.x < ((yd + run1 + run2)*6.3)+60){
+          ball.x += 2;
+          break;
+        }
+        }
+      }
+      if(firstl.x > 714 && firstl.x !== -100){
+        firsta = "Goal";
+      }
+    }else{}
+  }else{                                        // end 2
+    if(por == 1){
+      if (ball.x <= 60){
+        bluery += yd;
+        yd = 0;
+        time = 40;
+        bluera += 1;
+        bluert += 1;
+      }
+      if((run1 + run2) < 0){
+        if(ball.x >= ((yd -(run1 + run2))*6.3)+60){
+          yd -= (run1+run2);
+          down += 1;
+          por = 10;
+          com = coma[7];
+          time = 40;
+          bluera += 1;
+          bluel.x = ball.x+23;
+          firsta -= (run1 + run2);
+          bluery += (run1 + run2);
+        }else{
+        while(ball.x < ((yd -(run1 + run2))*6.3)+60){
+          ball.x += 1;
+          break;
+        }
+        }
+      }else{
+        if(ball.x <= ((yd-(run1+run2))*6.3)+60){
+          yd -= ((run1+run2));
+          down += 1;
+          por = 10;
+          bluel.x = ball.x+23;
+          firsta -= (run1 + run2);
+          if(firstm == 1){
+            firstl.x = ball.x-41;
+            firsta = 10;
+            down = 1;
+          }
+          com = coma[7];
+          time = 40;
+          bluera += 1;
+          bluery += (run1 + run2);
+        }else{
+        while(ball.x > ((yd-(run1+run2))*6.3)+60){
+          ball.x -= 2;
+          break;
+        }
+        }
+      }
+      if(firstl.x < 83 && firstl.x !== -100){
+        firsta = "Goal";
+      }
+    }else{}
+  }
+}
+
+function fgmake(side){
+  if(side == 0){
+    if(ball.x >= 780){
+      com = coma[12];
+      if(ball.x >= 1000){
+        end = 0;
+        por = 10;
+        down = 1;
+        red += 3;
+      }
+    }
+    while(ball.x < 1000){
+      ball.x += 2.3;
+    break;
+    }
+  }else{
+    if(ball.x <= 20){
+      com = coma[12];
+      if(ball.x <= -200){
+        end = 4;
+        por = 10;
+        down = 1;
+        blue += 3;
+      }
+    }
+    while(ball.x > -200){
+      ball.x -= 2.3;
+    break;
+    }
+  }
+}
+function fgmiss(side, dis){
+  if(side == 0){
+    if(ball.x >= 780){
+      com = coma[13];
+      if(ball.x >= 1000){
+        por = 10;
+        ball.x = (yd*6.3)+60;
+        ball.y = 278;
+        down = 5;
+      }
+    }
+    while(ball.x < 1000){
+      ball.x += 2.3;
+      ball.y += dis*1.15;
+      break;
+    }
+  }else{
+    if(ball.x <= 20){
+      com = coma[13];
+      if(ball.x <= -200){
+        por = 10;
+        ball.x = (yd*6.3)+60;
+        ball.y = 278;
+        down = 5;
+      }
+    }
+    while(ball.x > -200){
+      ball.x -= 2.3;
+      ball.y -= dis*1.15;
+      break;
+    }
+  }
+}
+
+
+function fg(side){
+  if(por == 3){
+    com = coma[11];
+    if(side == 0){
+      if(yd >= 90){
+        if(fgp < (18/19)){//makes
+          fgmake(0);
+        }else{//misses
+          fgmiss(0, 1);
+        }
+      }else if(yd >= 80){
+        if(fgp < (20/23)){//makes
+          fgmake(0);
+        }else{//misses
+          fgmiss(0, 0.8);
+        }
+        
+      }else if(yd >= 70){
+        if(fgp < (19/24)){//makes
+          fgmake(0);
+        }else{//misses
+          fgmiss(0, 0.58);
+        }
+      }else if(yd >= 60){
+        if(fgp < (8/13)){//makes
+          fgmake(0);
+        }else{//misses
+          fgmiss(0, 0.41);
+        }
+      }else{
+        if(fgp < (1/100)){//makes
+          fgmake(0);
+        }else{//misses
+          fgmiss(0, 0.23);
+        }
+      }
+    }else{
+      if(yd <= 10){
+        if(fgp < (18/19)){//makes
+          fgmake(1);
+        }else{//misses
+          fgmiss(1, 1);
+        }
+      }else if(yd <= 20){
+        if(fgp < (20/23)){//makes
+          fgmake(1);
+        }else{//misses
+          fgmiss(1, 0.8);
+        }
+        
+      }else if(yd <= 30){
+        if(fgp < (19/24)){//makes
+          fgmake(1);
+        }else{//misses
+          fgmiss(1, 0.58)
+        }
+      }else if(yd <= 40){
+        if(fgp < (8/13)){//makes
+          fgmake(1);
+        }else{//misses
+          fgmiss(1, 0.41);
+        }
+      }else{
+        if(fgp < (1/100)){//makes
+          fgmake(1);
+        }else{//misses
+          fgmiss(1, 0.23);
+        }
+      }
+    }
+  }else{}
+}
+
+
+function game(){
+  firstm = 0;
+  if (end == 50){
+    if(everyinterval(250)){
+      if(yd == 80){
+        ball.x = 560;
+        end = 2;
+        button(2);
+      }else{
+      end = 4;
+      ball.x = 471;
+      }
+    }
+  }
+  if (end == 51){
+    if(everyinterval(250)){
+      if(yd == 20){
+        ball.x = 191;
+        end = 6;
+        button(2);
+      }else{
+      end = 0;
+      ball.x = 265;
+      }
+    }
+  }
+  if (end == 0){
+    kickoff(0);
+  }
+  if(end == 1){
+    kickret(1);
+  }
+  if(end == 2){
+    if(ball.x + 23 < firstl.x+4||firsta == 0){
+      firstm = 1;
+    }
+    point.x = 22;
+    point.color = "blue";
+    pass(1);
+    run(1);
+    punt(1);
+    fg(1);
+    if(down == 5){
+      end = 6;
+      down = 1;
+      firstl.x = ball.x+84;
+      bluel.x = ball.x+23;
+      firsta = 10;
+    }
+    if(firstl.x < 83 && firstl.x !== -100){
+      firsta = "Goal";
+    }
+  }
+  if(end == 4){
+    kickoff(1);
+  }
+  if(end == 5){
+    kickret(0);
+  }
+  if(end == 6){
+    if(ball.x+23 >= firstl.x-1 || firsta == 0){
+      firstm = 1;
+    }
+    point.x = 717;
+    point.color = "Red";
+    pass(0);
+    run(0);
+    punt(0);
+    fg(0);
+    if(down == 5){
+      end = 2;
+      down = 1;
+      firstl.x = ball.x-41;
+      bluel.x = ball.x+23;
+      firsta = 10;
+    if(firstl.x > 714 && firstl.x !== -100){
+        firsta = "Goal";
+    }
+    }    
+  }
+}
+
+
+
+function updateGameArea() {
+  myGameArea.clear();
+  myGameArea.frameNo += 1;
+  if(myGameArea.frameNo == 1 ||everyinterval(600)){
+    retrand = getRndInteger(1,5);
+    ret1 = getRndInteger(0,14);
+    ret2 = getRndInteger(0,14);
+    ret3 = getRndInteger(0,14);
+    coma[1] = "Kickreturn to the " + (ret1 + ret2 + ret3);
+  }
+  if ((min*60)+sec <= 0){
+    quart += 1;
+    min = 15;
+    sec = 0;
+    down == 1;
+    if (quart == 3){
+      end = 4;
+    }
+  }
+  if (quart == 5){
+    quart = 4;
+    end = 100;
+    min = 0;
+    sec = 0;
+  }
+  time = 0;
+  if(min < 10){
+    timemin.x = 294;
+  }else{
+    timemin.x = 280;
+  }
+  if(end == 100){
+
+  }else{
+  game();
+  }
+  if(auto == 1){
+    if(bluel.x == ball.x+23){
+      psorn = getRndInteger(1,10);
+      if(firsta != "Goal"){
+        if(down == 1){
+          if(psorn > 4){
+            button(0);
+          }else{
+            button(1);
+          }
+        }else if(down == 2 || down == 3){
+          if(firsta < 4){
+            button(1);
+          }else{
+            button(0);
+          }
+        }else if(down == 4){
+          if(end == 2){
+            if(yd <= 37){
+              button(3);
+            }else{
+              button(2);
+            }
+          }else if(end == 6){
+            if(yd >= 63){
+              button(3);
+            }else{
+              button(2);
+            }
+          }else{
+            button(2);
+          }
+        }
+      }else{
+        if(down == 1 || down == 2 || down == 3){
+          if(yd > 89 || yd < 11){
+            if(psorn > 4){
+              button(1);
+            }else{
+              button(0);
+            }
+          }else{
+            button(0);
+          }
+        }else if(down == 4){
+          button(3);
+        }
+      }
+    }
+  }
+  
+  if(down == 4){
+    firstl.color = "red";
+  }else{
+    firstl.color = "yellow";
+  }
+  if(yd > 50){
+    ryd = 100 - yd;
+  }else{
+    ryd = yd;
+  }
+  if(quart == 2 || quart == 4){
+    if(min == 2 && sec == 0){
+      time /= 2;
+    }
+    if(min < 2){
+      time /= 2;
+    }
+  }
+  if(sec >= time){
+    sec -= time;
+  }else{
+    min -= 1;
+    sec += 60 - time;
+  }
+
+  if(yd <= 0){
+    por = 10;
+    down = 1;
+    time = 0;
+    point.x = -100;
+    firstl.x = -100;
+    bluel.x = -100;
+    firsta = 10;
+    if(end == 6){
+      blue += 2;
+      yd = 20;
+      end = 51;
+      com = coma[10];
+    }else{
+      com = coma[6];
+      blue += 7;
+      yd = 65;
+      end = 50;
+    }
+  }
+  if(yd >= 100){
+    time = 0;
+    point.x = -100;
+    firstl.x = -100;
+    bluel.x = -100;
+    firsta = 10;
+    por = 10;
+    down = 1;
+    if(end == 2){
+      red += 2;
+      yd = 80;
+      end = 50;
+      com = coma[10];
+    }else{
+      com = coma[6];
+      red += 7;
+      yd = 35;
+      end = 51;
+    }
+  }
+
+  myGamePiece1.update();
+  myRedScore.text = "Red: "+ red;
+  myBlueScore.text = "Blue: "+ blue;
+  //ydLine.text = "Yard: " + ryd;
+  downcount.text = down + ending[down] + " and " + firsta;
+  quartcount.text = quart + ending[quart];
+  commentary.text = com;
+
+  bluep.text = "Blue Passing   " + bluepc + "/" + bluepa;
+  bluer.text = "Blue Running   " + bluera;
+  bluepyd.text = bluepy;
+  blueryd.text = bluery;
+  blueptd.text = bluept;
+  bluertd.text = bluert;
+  bluei.text = blueint;
+
+  redp.text = "Red Passing    " + redpc + "/" + redpa;
+  redr.text = "Red Running    " + redra;
+  redpyd.text = redpy;
+  redryd.text = redry;
+  redptd.text = redpt;
+  redrtd.text = redrt;
+  redi.text =redint;
+
+  timemin.text = min + ":";
+  if (sec == 0||sec == 5){
+    timesec.text = "0" + sec;
+  } else{
+  timesec.text = sec;
+  }
+  timesec.update();
+  timemin.update();
+  myRedScore.update();
+  myBlueScore.update();
+  //ydLine.update();
+  downcount.update();
+  commentary.update();
+  quartcount.update();
+
+  bluep.update();
+  bluer.update();
+  bluepyd.update();
+  blueryd.update();
+  blueptd.update();
+  bluertd.update();
+  bluei.update();
+
+  redp.update();
+  redr.update();
+  redpyd.update();
+  redryd.update();
+  redptd.update();
+  redrtd.update();
+  redi.update();
+
+  firstl.update();
+  bluel.update();
+  point.update();
+  ball.update();
+  
+}
+
+</script>
+<style>
+.button {
+  background-color: #3399ff;
+  border: none;
+  color: white;
+  padding: 20px 53px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 30px;
+  margin: 4px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+</style>
+
+<button class="button"onclick="button(0)">Pass</button>
+<button class="button" onclick="button(1)">Run</button>
+<button class="button"onclick="button(2)">Punt</button>
+<button class="button"onclick="button(3)">FG</button>
+<button class="button"onclick="button(4)">Auto</button>
+
+
+</head>
+</html>
